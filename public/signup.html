@@ -5,6 +5,7 @@
     <title>cmmc-member-webapp</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.0/css/bulma.min.css">
     <link rel="stylesheet" href="https://jenil.github.io/bulmaswatch/materia/bulmaswatch.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
 </head>
 <body>
 
@@ -16,48 +17,49 @@
                 <div class="card">
                     <div class="card-content">
 
-                        <form action="#" method="POST">
-                            <div class="field">
-                                <div class="control">
-                                    <input class="input" type="text" placeholder="Name" required>
-                                </div>
+                        <div class="field">
+                            <div class="control">
+                                <input class="input" id="name" type="text" placeholder="Name">
                             </div>
-                            <div class="field">
-                                <div class="control">
-                                    <input class="input" type="email" placeholder="E-mail" required autofocus>
-                                </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <input class="input" id="email" type="email" placeholder="E-mail">
                             </div>
-                            <div class="field">
-                                <div class="control">
-                                    <input class="input" type="password" placeholder="Password" required>
-                                </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <input class="input" id="password" type="password" placeholder="Password">
                             </div>
-                            <div class="field">
-                                <div class="control">
-                                    <input class="input" type="password" placeholder="Confirm Password" required>
-                                </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <input class="input" id="cf_password" type="password" placeholder="Confirm Password"
+                                >
                             </div>
-                            <div class="columns">
-                                <div class="column">
-                                    <div class="left">
-                                        <div class="field">
-                                            <div class="control">
-                                                <a href="index.html" class="button is-link" style="color: #ff3860">Back</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="column">
-                                    <div class="level-right">
-                                        <div class="field">
-                                            <div class="control">
-                                                <button class="button is-success">Submit</button>
-                                            </div>
+                        </div>
+                        <div class="columns">
+                            <div class="column">
+                                <div class="left">
+                                    <div class="field">
+                                        <div class="control">
+                                            <a href="index.html" class="button is-link"
+                                               style="color: #ff3860">Back</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </form>
+                            <div class="column">
+                                <div class="level-right">
+                                    <div class="field">
+                                        <div class="control">
+                                            <button type="button" id="btn-submit" class="button is-success">Submit
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                     </div>
                 </div>
@@ -66,6 +68,77 @@
     </div>
 
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: 'AIzaSyCZ7dPhgIMD4sv1dtJ_yvy1pCi1ksGOHRs',
+    authDomain: 'company-network-1481121239049.firebaseapp.com',
+    databaseURL: 'https://company-network-1481121239049.firebaseio.com',
+    projectId: 'company-network-1481121239049',
+    storageBucket: 'company-network-1481121239049.appspot.com',
+    messagingSenderId: '7040751884'
+  }
+  firebase.initializeApp(config)
+
+  $(document).ready(function () {
+
+    var field_name = $('#name')
+    var field_email = $('#email')
+    var field_password = $('#password')
+    var field_cf_password = $('#cf_password')
+
+    $('#btn-submit').on('click', function () {
+
+      if (field_name.val().length > 0) {
+        if (field_email.val().length > 0) {
+          if (field_password.val().length > 0) {
+            if (field_cf_password.val().length > 0) {
+              if (field_password.val() === field_cf_password.val()) {
+                writeFirebase()
+              } else { swal('Error', 'Password not match', 'error') }
+            } else { field_cf_password.focus() }
+          } else { field_password.focus() }
+        } else { field_email.focus() }
+      } else { field_name.focus() }
+
+    })
+
+    function writeFirebase () {
+      var ref = firebase.database().ref('cmmc')
+
+      /* === check duplicate email === */
+      window.status = 0
+      ref.child('member').once('value', function (snapshot) {
+        snapshot.forEach(function (childSnapshot) {
+          if (childSnapshot.val().email === $('#email').val()) {
+            status = 1
+          }
+        })
+      });
+
+      if (status === 0) {
+        ref.child('member').push({
+          name: field_name.val(),
+          email: field_email.val(),
+          password: field_password.val()
+        })
+        swal('Success', 'Redirect to login in 3 second', 'success')
+        setTimeout(function () {
+          window.location.href = 'index.html'
+        }, 3000)
+      } else {
+        swal('Error', 'Email not available', 'error')
+      }
+      /* ============================= */
+    }
+  })
+
+</script>
 
 </body>
 </html>
