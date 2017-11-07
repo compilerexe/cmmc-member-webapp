@@ -5,6 +5,7 @@
     <title>cmmc-member-webapp</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.0/css/bulma.min.css">
     <link rel="stylesheet" href="https://jenil.github.io/bulmaswatch/materia/bulmaswatch.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
 </head>
 <body>
 
@@ -16,38 +17,40 @@
                 <div class="card">
                     <div class="card-content">
 
-                        <form action="#" method="POST">
-                            <div class="field">
-                                <div class="control">
-                                    <input class="input" type="email" placeholder="E-mail" required autofocus>
-                                </div>
+                        <!--<form action="#" method="POST">-->
+                        <div class="field">
+                            <div class="control">
+                                <input class="input" type="email" id="email" placeholder="E-mail" required autofocus>
                             </div>
-                            <div class="field">
-                                <div class="control">
-                                    <input class="input" type="password" placeholder="Password" required>
-                                </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <input class="input" type="password" id="password" placeholder="Password" required>
                             </div>
-                            <div class="columns">
-                                <div class="column">
-                                    <div class="left">
-                                        <div class="field">
-                                            <div class="control">
-                                                <a href="signup.html" class="button is-link" style="color: green">Sign Up</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="column">
-                                    <div class="level-right">
-                                        <div class="field">
-                                            <div class="control">
-                                                <button class="button is-primary">Sign In</button>
-                                            </div>
+                        </div>
+                        <div class="columns">
+                            <div class="column">
+                                <div class="left">
+                                    <div class="field">
+                                        <div class="control">
+                                            <a href="signup.html" class="button is-link" style="color: green">Sign
+                                                Up</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </form>
+                            <div class="column">
+                                <div class="level-right">
+                                    <div class="field">
+                                        <div class="control">
+                                            <button type="button" id="btn-submit" class="button is-primary">Sign In
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--</form>-->
 
                     </div>
                 </div>
@@ -56,6 +59,57 @@
     </div>
 
 </div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: 'AIzaSyCZ7dPhgIMD4sv1dtJ_yvy1pCi1ksGOHRs',
+    authDomain: 'company-network-1481121239049.firebaseapp.com',
+    databaseURL: 'https://company-network-1481121239049.firebaseio.com',
+    projectId: 'company-network-1481121239049',
+    storageBucket: 'company-network-1481121239049.appspot.com',
+    messagingSenderId: '7040751884'
+  }
+  firebase.initializeApp(config)
+
+  $(document).ready(function () {
+
+    $('#btn-submit').on('click', function () {
+      const email = $('#email')
+      const password = $('#password')
+
+      if (email.val().length > 0) {
+        if (password.val().length > 0) {
+
+          var ref = firebase.database().ref('cmmc/member')
+
+          ref.once('value', function (snapshot) {
+            var status = 0
+            snapshot.forEach(function (childSnapshot) {
+              if (email.val() === childSnapshot.val().email && password.val() === childSnapshot.val().password) {
+                status = 1
+                console.log('ok')
+              }
+            })
+            if (status === 0) {
+              swal('Error', 'Please try again', 'error')
+            } else {
+              swal('Success', 'Welcome', 'success')
+            }
+          })
+
+        } else { password.focus() }
+      } else { email.focus() }
+    })
+
+  })
+
+</script>
 
 </body>
 </html>
