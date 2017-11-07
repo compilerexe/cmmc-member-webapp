@@ -17,15 +17,14 @@
                 <div class="card">
                     <div class="card-content">
 
-                        <!--<form action="#" method="POST">-->
                         <div class="field">
                             <div class="control">
-                                <input class="input" type="email" id="email" placeholder="E-mail" required autofocus>
+                                <input class="input" type="email" id="email" placeholder="E-mail" autofocus>
                             </div>
                         </div>
                         <div class="field">
                             <div class="control">
-                                <input class="input" type="password" id="password" placeholder="Password" required>
+                                <input class="input" type="password" id="password" placeholder="Password">
                             </div>
                         </div>
                         <div class="columns">
@@ -50,7 +49,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!--</form>-->
 
                     </div>
                 </div>
@@ -62,26 +60,17 @@
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
+<script src="scripts/firebase-config.js"></script>
 <script>
-  // Initialize Firebase
-  var config = {
-    apiKey: 'AIzaSyCZ7dPhgIMD4sv1dtJ_yvy1pCi1ksGOHRs',
-    authDomain: 'company-network-1481121239049.firebaseapp.com',
-    databaseURL: 'https://company-network-1481121239049.firebaseio.com',
-    projectId: 'company-network-1481121239049',
-    storageBucket: 'company-network-1481121239049.appspot.com',
-    messagingSenderId: '7040751884'
-  }
-  firebase.initializeApp(config)
 
   $(document).ready(function () {
 
     $('#btn-submit').on('click', function () {
       const email = $('#email')
       const password = $('#password')
+      var profile = {}
 
       if (email.val().length > 0) {
         if (password.val().length > 0) {
@@ -92,14 +81,19 @@
             var status = 0
             snapshot.forEach(function (childSnapshot) {
               if (email.val() === childSnapshot.val().email && password.val() === childSnapshot.val().password) {
+                profile = {
+                  id: childSnapshot.key,
+                  name: childSnapshot.val().name,
+                  email: childSnapshot.val().email
+                }
                 status = 1
-                console.log('ok')
               }
             })
             if (status === 0) {
               swal('Error', 'Please try again', 'error')
             } else {
-              swal('Success', 'Welcome', 'success')
+              localStorage.setItem('profile', JSON.stringify(profile))
+              window.location.href = 'personal.html'
             }
           })
 

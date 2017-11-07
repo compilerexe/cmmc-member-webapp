@@ -51,27 +51,26 @@
                             </div>
                         </div>
 
-                        <form action="#" method="POST">
-
                         <div class="field">
-                        <div class="control">
-                        <input type="text" class="input is-info" placeholder="Role Name" required>
-                        </div>
+                            <div class="control">
+                                <input type="text" id="role_name" class="input is-info" placeholder="Role Name">
+                            </div>
                         </div>
 
                         <div class="field">
-                        <textarea class="textarea" name="" id="" cols="30" rows="10" required></textarea>
+                            <textarea class="textarea" name="" id="role_detail" cols="30" rows="10"
+                                      placeholder="Write something about your role ..."></textarea>
                         </div>
 
                         <div class="field">
-                        <div class="level-right">
-                        <div class="control column is-2">
-                        <button class="button is-success" style="width: 100%">Add</button>
+                            <div class="level-right">
+                                <div class="control column is-2">
+                                    <button type="button" id="btn-submit" class="button is-success" style="width: 100%">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        </div>
-                        </div>
-
-                        </form>
 
                     </div>
                 </div>
@@ -83,6 +82,36 @@
     </div>
 
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
+<script src="scripts/firebase-config.js"></script>
+
+<script>
+
+  $(document).ready(function () {
+    const role_name = $('#role_name')
+    const role_detail = $('#role_detail')
+    $('#btn-submit').on('click', function () {
+      if (role_name.val().length > 0) {
+        if (role_detail.val().length > 0) {
+
+          var ref = firebase.database().ref('cmmc/roles')
+
+          ref.push({
+            name: role_name.val(),
+            detail: role_detail.val()
+          }).then(function () {
+            window.history.back()
+          })
+
+        } else { role_detail.focus() }
+      } else { role_name.focus() }
+    })
+  })
+
+</script>
 
 </body>
 </html>

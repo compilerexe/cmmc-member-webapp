@@ -70,20 +70,10 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
+<script src="scripts/firebase-config.js"></script>
 <script>
-  // Initialize Firebase
-  var config = {
-    apiKey: 'AIzaSyCZ7dPhgIMD4sv1dtJ_yvy1pCi1ksGOHRs',
-    authDomain: 'company-network-1481121239049.firebaseapp.com',
-    databaseURL: 'https://company-network-1481121239049.firebaseio.com',
-    projectId: 'company-network-1481121239049',
-    storageBucket: 'company-network-1481121239049.appspot.com',
-    messagingSenderId: '7040751884'
-  }
-  firebase.initializeApp(config)
 
   $(document).ready(function () {
 
@@ -112,28 +102,26 @@
       var ref = firebase.database().ref('cmmc')
 
       /* === check duplicate email === */
-      window.status = 0
+      var status = 0
       ref.child('member').once('value', function (snapshot) {
         snapshot.forEach(function (childSnapshot) {
           if (childSnapshot.val().email === $('#email').val()) {
             status = 1
           }
         })
-      });
-
-      if (status === 0) {
-        ref.child('member').push({
-          name: field_name.val(),
-          email: field_email.val(),
-          password: field_password.val()
-        })
-        swal('Success', 'Redirect to login in 3 second', 'success')
-        setTimeout(function () {
-          window.location.href = 'index.html'
-        }, 3000)
-      } else {
-        swal('Error', 'Email not available', 'error')
-      }
+      }).then(function () {
+        if (status === 0) {
+          ref.child('member').push({
+            name: field_name.val(),
+            email: field_email.val(),
+            password: field_password.val()
+          }).then(function () {
+            window.location.href = 'index.html'
+          })
+        } else {
+          swal('Error', 'Email not available', 'error')
+        }
+      })
       /* ============================= */
     }
   })
